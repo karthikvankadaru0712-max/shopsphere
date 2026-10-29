@@ -3,10 +3,22 @@ import app from './app.js';
 import { connectDB } from './config/db.js';
 import { config } from './config/environment.js';
 import { initSocket } from './socket.js';
+import { Product } from './models/Product.js';
+import { ensureCatalogSeeded } from './utils/ensureCatalogSeeded.js';
+import { seedDatabase } from '../scripts/seed.js';
 
 const startServer = async () => {
   try {
     await connectDB();
+
+    const catalogStatus = await ensureCatalogSeeded({
+      Product,
+      seedFn: seedDatabase
+    });
+
+    if (catalogStatus.seeded) {
+      console.log(`[Startup] Catalog was empty — seeded ${catalogStatus.count} products.`);
+    }
 
     const server = http.createServer(app);
     initSocket(server);

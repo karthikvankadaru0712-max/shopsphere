@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Gift, ArrowRight, ArrowLeft, RotateCcw, ShoppingBag, Heart, Check } from 'lucide-react';
+import { Gift, Sparkles, ArrowRight, ArrowLeft, RotateCcw, ShoppingBag, Heart, Check } from 'lucide-react';
 import { Button } from '../common/Button';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
@@ -11,6 +11,7 @@ export const GiftFinderQuiz = () => {
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
+  const totalSteps = 4;
   const [step, setStep] = useState(1);
   const [occasion, setOccasion] = useState('Birthday');
   const [recipient, setRecipient] = useState('tech-lover');
@@ -67,7 +68,7 @@ export const GiftFinderQuiz = () => {
       <div className="flex items-center justify-between pb-6 border-b border-gray-100 mb-8">
         <div>
           <span className="text-xs font-bold text-rose-500 uppercase tracking-wider">
-            Step {step} of 3
+            Step {step} of {totalSteps}
           </span>
           <h2 className="text-xl sm:text-2xl font-extrabold text-sphere-charcoal tracking-tight flex items-center gap-2">
             <Gift className="w-6 h-6 text-rose-500" />
@@ -76,7 +77,7 @@ export const GiftFinderQuiz = () => {
         </div>
         {step < 4 && (
           <div className="flex gap-1.5">
-            {[1, 2, 3].map((s) => (
+            {[1, 2, 3, 4].map((s) => (
               <div
                 key={s}
                 className={`w-8 h-2 rounded-full transition-colors ${
@@ -209,7 +210,7 @@ export const GiftFinderQuiz = () => {
       )}
 
       {/* Step 4: Results */}
-      {step === 4 && gifts && (
+      {step === 4 && (
         <div className="space-y-6 animate-in fade-in duration-300">
           <div className="flex items-center justify-between pb-2 border-b border-gray-100">
             <div>
@@ -217,7 +218,9 @@ export const GiftFinderQuiz = () => {
                 Handpicked Gifts for {occasion}
               </h3>
               <p className="text-xs text-gray-500">
-                Found {gifts.length} verified products within your chosen budget
+                {gifts?.length
+                  ? `Found ${gifts.length} verified products within your chosen budget`
+                  : 'No products matched this occasion and budget combination.'}
               </p>
             </div>
             <Button
@@ -233,59 +236,65 @@ export const GiftFinderQuiz = () => {
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {gifts.map((product) => (
-              <div
-                key={product._id}
-                className="bg-white rounded-2xl p-4 border border-gray-100 shadow-soft hover:shadow-card transition-all flex flex-col justify-between"
-              >
-                <div>
-                  <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-gray-50 mb-3">
-                    <img
-                      src={product.images[0]}
-                      alt={product.name}
-                      className="w-full h-full object-cover"
-                    />
-                    <button
-                      onClick={() => toggleWishlist(product)}
-                      className="absolute top-2 right-2 p-1.5 bg-white/80 backdrop-blur-md rounded-full text-gray-500 hover:text-rose-500"
-                    >
-                      <Heart
-                        className={`w-4 h-4 ${isInWishlist(product._id) ? 'fill-rose-500 text-rose-500' : ''}`}
+          {!gifts || gifts.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-8 text-center text-sm text-gray-500">
+              Try widening the budget or changing the recipient to see more curated picks.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {gifts.map((product) => (
+                <div
+                  key={product._id}
+                  className="bg-white rounded-2xl p-4 border border-gray-100 shadow-soft hover:shadow-card transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-gray-50 mb-3">
+                      <img
+                        src={product.images[0]}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
                       />
-                    </button>
+                      <button
+                        onClick={() => toggleWishlist(product)}
+                        className="absolute top-2 right-2 p-1.5 bg-white/80 backdrop-blur-md rounded-full text-gray-500 hover:text-rose-500"
+                      >
+                        <Heart
+                          className={`w-4 h-4 ${isInWishlist(product._id) ? 'fill-rose-500 text-rose-500' : ''}`}
+                        />
+                      </button>
+                    </div>
+
+                    <span className="text-[10px] uppercase font-bold text-gray-400 block mb-1">
+                      {product.brand?.name || 'ShopSphere'}
+                    </span>
+                    <Link
+                      to={`/product/${product.slug}`}
+                      className="text-xs font-bold text-sphere-charcoal hover:text-sphere-violet line-clamp-2 block"
+                    >
+                      {product.name}
+                    </Link>
+                    <p className="text-[11px] text-gray-500 mt-1 line-clamp-2">
+                      {product.giftHighlight}
+                    </p>
                   </div>
 
-                  <span className="text-[10px] uppercase font-bold text-gray-400 block mb-1">
-                    {product.brand?.name || 'ShopSphere'}
-                  </span>
-                  <Link
-                    to={`/product/${product.slug}`}
-                    className="text-xs font-bold text-sphere-charcoal hover:text-sphere-violet line-clamp-2 block"
-                  >
-                    {product.name}
-                  </Link>
-                  <p className="text-[11px] text-gray-500 mt-1 line-clamp-2">
-                    {product.giftHighlight}
-                  </p>
+                  <div className="pt-3 mt-3 border-t border-gray-100 flex items-center justify-between">
+                    <span className="text-sm font-extrabold text-sphere-charcoal">
+                      ₹{product.price.toLocaleString()}
+                    </span>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => addToCart(product._id, null, 1)}
+                      icon={ShoppingBag}
+                    >
+                      Add
+                    </Button>
+                  </div>
                 </div>
-
-                <div className="pt-3 mt-3 border-t border-gray-100 flex items-center justify-between">
-                  <span className="text-sm font-extrabold text-sphere-charcoal">
-                    ₹{product.price.toLocaleString()}
-                  </span>
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={() => addToCart(product._id, null, 1)}
-                    icon={ShoppingBag}
-                  >
-                    Add
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

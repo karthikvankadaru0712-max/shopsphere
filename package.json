@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:server": "npm --prefix server run dev",
-    "dev:client": "npm --prefix client run dev",
+    "dev:client": "npm --prefix client run dev -- --host 0.0.0.0",
     "seed": "npm --prefix server run seed",
     "test:server": "npm --prefix server test",
     "build": "npm --prefix client run build",

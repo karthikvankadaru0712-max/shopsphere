@@ -13,7 +13,7 @@ import { InventoryMovement } from '../src/models/InventoryMovement.js';
 import { SmartCollection } from '../src/models/SmartCollection.js';
 import { Notification } from '../src/models/Notification.js';
 
-const seedDatabase = async () => {
+export const seedDatabase = async () => {
   try {
     console.log('[Seed] Connecting to MongoDB...');
     await connectDB();
@@ -1336,4 +1336,6 @@ const seedDatabase = async () => {
   }
 };
 
-seedDatabase();
+if (process.argv[1] && process.argv[1].endsWith('scripts/seed.js')) {
+  seedDatabase();
+}

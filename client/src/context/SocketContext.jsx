@@ -5,14 +5,31 @@ import { useAuth } from './AuthContext';
 
 const SocketContext = createContext(null);
 
+const getSocketServerUrl = () => {
+  if (import.meta.env.VITE_SOCKET_URL) return import.meta.env.VITE_SOCKET_URL;
+  if (import.meta.env.VITE_API_BASE_URL) {
+    try {
+      return new URL(import.meta.env.VITE_API_BASE_URL).origin;
+    } catch {
+      // Ignore invalid URL and fall through to default dev backend.
+    }
+  }
+  return import.meta.env.DEV ? 'http://localhost:5000' : window.location.origin;
+};
+
 export const SocketProvider = ({ children }) => {
-  const { user, isAdmin } = useAuth();
+  const auth = useAuth();
+  const user = auth?.user ?? null;
+  const isAdmin = auth?.isAdmin ?? false;
   const [socket, setSocket] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    // Connect to WebSocket server via proxy or direct URL
-    const socketInstance = io(window.location.origin, {
+    if (typeof window === 'undefined') return undefined;
+
+    const socketServerUrl = getSocketServerUrl();
+
+    const socketInstance = io(socketServerUrl, {
       path: '/socket.io',
       transports: ['websocket', 'polling'],
       autoConnect: true,

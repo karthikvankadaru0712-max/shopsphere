@@ -2,7 +2,19 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import api, { getGuestId } from '../services/api';
 import toast from 'react-hot-toast';
 
-const AuthContext = createContext(null);
+const defaultAuthContext = {
+  user: null,
+  loading: false,
+  isAuthenticated: false,
+  isAdmin: false,
+  login: async () => ({ success: false, message: 'Auth not available' }),
+  register: async () => ({ success: false, message: 'Auth not available' }),
+  logout: async () => {},
+  updateProfile: async () => false,
+  refreshUser: async () => {}
+};
+
+const AuthContext = createContext(defaultAuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -110,6 +122,5 @@ export const AuthProvider = ({ children }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be used within an AuthProvider');
-  return context;
+  return context || defaultAuthContext;
 };

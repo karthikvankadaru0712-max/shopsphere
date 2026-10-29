@@ -1,5 +1,8 @@
 import axios from 'axios';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.DEV ? 'http://localhost:5000/api/v1' : '/api/v1');
+
 // Ensure a persistent guest ID for unauthenticated cart sessions
 export const getGuestId = () => {
   let guestId = localStorage.getItem('shopsphere_guest_id');
@@ -11,7 +14,7 @@ export const getGuestId = () => {
 };
 
 const api = axios.create({
-  baseURL: '/api/v1',
+  baseURL: API_BASE_URL,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
