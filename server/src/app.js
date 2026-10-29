@@ -38,6 +38,7 @@ app.use(
         "img-src": ["'self'", "data:", "https://images.unsplash.com"],
       },
     },
+    crossOriginResourcePolicy: { policy: 'cross-origin' }
   })
 );
 
